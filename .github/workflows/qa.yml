@@ -39,11 +39,11 @@ jobs:
       QA_LOCALE: ${{ matrix.locale }}
       # Maquina dedicada do CI: varre o SITE INTEIRO (0 = sem teto de paginas).
       CRAWL_MAX_PAGES: "0"
-      # Autenticação opcional: se os secrets existirem, roda logado (igual ao
-      # daily); senão, roda anônimo (audita o site público).
-      AUTH_USER: ${{ secrets.AUTH_USER }}
-      AUTH_PASS: ${{ secrets.AUTH_PASS }}
-      QA_AUTH: ${{ secrets.AUTH_USER != '' && '1' || '' }}
+      # CI roda SEMPRE sem autenticação: o Keycloak/CDN bloqueia IPs do GitHub
+      # Actions, o que faz o auth.setup falhar e cancelar todos os 12 testes.
+      # A cobertura de links/imagens/performance existe também nas páginas públicas.
+      # Para testar com login, use o daily-audit.sh localmente (QA_AUTH=1).
+      QA_AUTH: ""
     steps:
       - uses: actions/checkout@v4
 
