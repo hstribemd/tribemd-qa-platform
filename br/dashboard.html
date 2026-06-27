@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QA Report — TribeMD BR</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#0d1117;color:#c9d1d9;font-size:14px;line-height:1.5}
+
+/* ── Topbar ── */
+.topbar{background:#161b22;border-bottom:1px solid #30363d;padding:14px 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand h1{font-size:16px;font-weight:700;color:#e6edf3;white-space:nowrap}
+.locale-tag{background:#1f6feb;color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:4px;letter-spacing:.6px;flex-shrink:0}
+.report-meta{color:#8b949e;font-size:12px;white-space:nowrap}
+.action-btns{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.action-btn{background:#21262d;color:#e6edf3;border:1px solid #30363d;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;line-height:1.4}
+.action-btn:hover{background:#30363d;border-color:#8b949e}
+.action-btn.primary{background:#1f6feb;border-color:#1f6feb}
+.action-btn.primary:hover{background:#388bfd}
+
+/* ── Status banner ── */
+.status-banner{padding:11px 32px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px}
+.status-banner::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0}
+.status-critical{background:#2d0a0a;color:#ff7b72;border-bottom:1px solid #b71c1c44}
+.status-high{background:#1f0d00;color:#ffa657;border-bottom:1px solid #e6510044}
+.status-medium{background:#1f1700;color:#e3b341;border-bottom:1px solid #f57f1744}
+.status-low{background:#111a0f;color:#7ee787;border-bottom:1px solid #2e7d3244}
+.status-ok{background:#0a1f0a;color:#3fb950;border-bottom:1px solid #2e7d3244}
+
+/* ── Stats ── */
+.stats-bar{padding:16px 32px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.stat-block{text-align:center;min-width:64px}
+.stat-n{font-size:26px;font-weight:700;color:#e6edf3;line-height:1}
+.stat-l{font-size:11px;color:#8b949e;margin-top:3px}
+.vd{width:1px;height:40px;background:#30363d;flex-shrink:0}
+.sev-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sp{padding:4px 13px;border-radius:999px;font-size:12px;font-weight:600;color:#fff}
+
+/* ── Toolbar ── */
+.toolbar{padding:10px 32px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.search-input{background:#0d1117;color:#e6edf3;border:1px solid #30363d;border-radius:6px;padding:5px 12px;font-size:12px;width:220px;outline:none}
+.search-input:focus{border-color:#58a6ff;background:#111820}
+.search-input::placeholder{color:#484f58}
+.tb-sep{width:1px;height:20px;background:#30363d;flex-shrink:0;margin:0 2px}
+.tb-btn{background:#21262d;color:#e6edf3;border:1px solid #30363d;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px}
+.tb-btn:hover,.tb-btn.on{background:#1f6feb;border-color:#1f6feb}
+
+/* ── Cards ── */
+main{padding:16px 32px 64px}
+.card{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:10px;overflow:hidden;transition:box-shadow .15s}
+.card:hover{box-shadow:0 0 0 1px #58a6ff40}
+.card-head{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none}
+.card-head:hover{background:#1c2128}
+.head-left{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sev-badge{padding:2px 9px;border-radius:5px;color:#fff;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.bug-id{font-family:ui-monospace,monospace;font-size:12px;color:#8b949e;white-space:nowrap}
+.head-title{flex:1;min-width:0}
+.htitle{font-size:13px;font-weight:600;color:#e6edf3}
+.head-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.loc-badge{font-size:11px;color:#8b949e;border:1px solid #30363d;border-radius:5px;padding:2px 7px}
+.chev{color:#8b949e;font-size:12px;transition:transform .15s}
+.card.open .chev{transform:rotate(90deg)}
+.card-body{display:none;padding:0 16px 20px;border-top:1px solid #21262d}
+.card.open .card-body{display:block}
+
+/* ── Seções ── */
+.jira-section{margin-top:16px}
+.slabel{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#58a6ff;margin-bottom:8px}
+.jira-section p{font-size:13px;color:#c9d1d9;line-height:1.6}
+.context-box{background:#1c2128;border-left:3px solid #58a6ff;border-radius:0 6px 6px 0;padding:12px 14px;margin-top:16px}
+.context-p{font-size:13px;color:#e6edf3;line-height:1.7}
+.two-col-top{display:grid;grid-template-columns:minmax(300px,auto) 1fr;gap:16px;margin-top:16px}
+@media(max-width:900px){.two-col-top{grid-template-columns:1fr}}
+.right-cols{display:flex;flex-direction:column;gap:0}
+.dtable{border-collapse:collapse;width:100%;font-size:13px}
+.dtable tr{border-bottom:1px solid #21262d}
+.dtable tr:last-child{border-bottom:none}
+.dk{color:#8b949e;padding:6px 12px 6px 0;white-space:nowrap;vertical-align:top;font-weight:500;width:130px}
+.dv{color:#e6edf3;padding:6px 0;word-break:break-word}
+.url-cell{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px}
+.url-cell .url-link{font-family:ui-monospace,monospace;font-size:11px;color:#79c0ff;word-break:break-all;text-decoration:none;min-width:0;flex:1}
+.url-cell .url-link:hover{text-decoration:underline;color:#a5d6ff}
+.copy-btn{background:none;border:1px solid #30363d;border-radius:4px;color:#8b949e;cursor:pointer;font-size:12px;line-height:1;padding:1px 5px;flex-shrink:0}
+.copy-btn:hover{background:#21262d;color:#e6edf3;border-color:#58a6ff}
+.copy-btn.ok{color:#3fb950;border-color:#3fb950}
+code{background:#0d1117;border:1px solid #30363d;border-radius:4px;padding:1px 6px;font-size:11px;font-family:ui-monospace,monospace}
+.returned-p{font-weight:600;color:#f0883e}
+.steps-ol{padding-left:18px;font-size:13px;color:#c9d1d9}
+.steps-ol li{margin-bottom:4px;line-height:1.5}
+.step-link{color:#79c0ff;text-decoration:none;word-break:break-all}
+.step-link:hover{text-decoration:underline}
+.ev-grid{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:4px}
+.ev-block{flex:1;min-width:260px;max-width:600px}
+.ev-label{font-size:11px;color:#8b949e;margin-bottom:6px;font-weight:500}
+.ev-img{width:100%;border:1px solid #30363d;border-radius:6px;cursor:zoom-in;display:block;background:#fff}
+.ev-vid{width:100%;border-radius:6px;border:1px solid #30363d;max-height:340px;display:block;background:#000}
+.ev-hint{font-size:11px;color:#8b949e;margin-top:4px}
+.ev-links{display:flex;flex-direction:column;gap:6px;margin-top:4px;font-size:12px}
+.ev-links a{color:#58a6ff;text-decoration:none}
+.ev-links a:hover{text-decoration:underline}
+.no-ev{color:#8b949e;font-size:13px;font-style:italic}
+a{color:#58a6ff}
+.empty{color:#8b949e;text-align:center;padding:48px 0;font-size:14px}
+
+/* ── Impressão / PDF ── */
+@media print{
+  .action-btns,.toolbar{display:none!important}
+  body{background:#fff;color:#111}
+  .topbar{background:#fff;border-bottom:2px solid #000;padding:12px 16px}
+  .brand h1{color:#000}
+  .locale-tag{background:#1f6feb;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .report-meta{color:#555}
+  .status-banner{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stats-bar{background:#fafafa;border-bottom:1px solid #ddd}
+  .stat-n{color:#000}
+  .stat-l{color:#555}
+  .vd{background:#ddd}
+  .sp{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .card{background:#fff;border:1px solid #ccc;break-inside:avoid;margin-bottom:8px;box-shadow:none!important}
+  .card-head{background:#fafafa!important}
+  .sev-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .htitle,.context-p{color:#000}
+  .card-body{display:block!important;background:#fff!important}
+  .context-box{background:#f0f4ff!important;border-left:3px solid #1f6feb;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .slabel{color:#1f6feb}
+  .dk{color:#555}
+  .dv,.jira-section p,.steps-ol{color:#111}
+  .returned-p{color:#c62400}
+  .url-cell .url-link{color:#0055cc}
+  .step-link{color:#0055cc}
+  .copy-btn{display:none}
+  .ev-img{max-height:280px;width:auto;border:1px solid #ccc}
+  .ev-vid{display:none}
+  .ev-hint{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <h1>QA Report — TribeMD</h1>
+    <span class="locale-tag">BR</span>
+  </div>
+  <div class="report-meta">Gerado em 27/06/2026, 18:41:22</div>
+  <div class="action-btns">
+    <button class="action-btn" onclick="copySummary(this)" title="Copia um resumo pronto para colar no WhatsApp, Slack ou e-mail">Copiar resumo</button>
+    <button class="action-btn" onclick="window.print()" title="Abre o diálogo de impressão — use 'Salvar como PDF' para exportar">Imprimir / PDF</button>
+    <button class="action-btn primary" onclick="downloadReport()" title="Baixa este painel como arquivo HTML — basta abrir no navegador para visualizar">Baixar relatório</button>
+  </div>
+</div>
+
+<div class="status-banner status-ok">Tudo certo — nenhum defeito encontrado nesta execução</div>
+
+<div class="stats-bar">
+  
+  <div class="stat-block"><div class="stat-n">0</div><div class="stat-l">Defeitos encontrados</div></div>
+  
+</div>
+
+<div class="toolbar">
+  <input class="search-input" type="search" placeholder="Buscar por URL, título, erro…" oninput="search(this.value)" aria-label="Buscar defeitos">
+  <div class="tb-sep"></div>
+  <button class="tb-btn on" data-f="all" onclick="filt(this,'all')">Todos (0)</button>
+  
+  
+  
+  
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="document.querySelectorAll('.card').forEach(c=>c.classList.add('open'))">Expandir tudo</button>
+  <button class="tb-btn" onclick="document.querySelectorAll('.card').forEach(c=>c.classList.remove('open'))">Recolher tudo</button>
+</div>
+
+<main>
+  <p class="empty">Nenhum defeito registrado nesta execução.</p>
+</main>
+
+<script>
+const SUMMARY_TEXT = "QA TribeMD — BR — 27/06/2026\n0 defeito(s) encontrado(s)\nCrítico: 0 | Alto: 0 | Médio: 0 | Baixo: 0";
+const REPORT_FILENAME = "tribemd-qa-br-2026-06-27.html";
+
+function filt(btn, sev) {
+  document.querySelectorAll('.toolbar button[data-f]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  applyFilters();
+}
+
+function search() {
+  applyFilters();
+}
+
+function applyFilters() {
+  const sev = document.querySelector('.toolbar button[data-f].on')?.dataset.f || 'all';
+  const term = (document.querySelector('.search-input').value || '').toLowerCase();
+  document.querySelectorAll('.card').forEach(c => {
+    const matchSev = sev === 'all' || c.dataset.sev === sev;
+    const matchQ = !term || c.textContent.toLowerCase().includes(term);
+    c.style.display = (matchSev && matchQ) ? '' : 'none';
+  });
+}
+
+function copyUrl(btn) {
+  const url = btn.dataset.url;
+  const done = () => {
+    btn.classList.add('ok'); btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = '⧉'; btn.classList.remove('ok'); }, 1500);
+  };
+  if (navigator.clipboard) { navigator.clipboard.writeText(url).then(done); }
+  else { fallbackCopy(url); done(); }
+}
+
+function copySummary(btn) {
+  const done = () => {
+    const prev = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(() => { btn.textContent = prev; }, 2000);
+  };
+  if (navigator.clipboard) { navigator.clipboard.writeText(SUMMARY_TEXT).then(done); }
+  else { fallbackCopy(SUMMARY_TEXT); done(); }
+}
+
+function fallbackCopy(text) {
+  const ta = Object.assign(document.createElement('textarea'), {
+    value: text, style: 'position:fixed;opacity:0'
+  });
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  document.execCommand('copy'); document.body.removeChild(ta);
+}
+
+function downloadReport() {
+  const html = '<!doctype html>' + document.documentElement.outerHTML;
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([html], {type: 'text/html;charset=utf-8'})),
+    download: REPORT_FILENAME
+  });
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 3000);
+}
+</script>
+</body>
+</html>
