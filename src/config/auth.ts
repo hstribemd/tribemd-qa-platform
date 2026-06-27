@@ -33,13 +33,13 @@ export function authConfig(): AuthConfig {
   return {
     user: process.env.AUTH_USER ?? '',
     pass: process.env.AUTH_PASS ?? '',
-    loginTrigger: process.env.AUTH_LOGIN_TRIGGER ?? 'text=/entrar|login|acessar/i',
+    loginTrigger: process.env.AUTH_LOGIN_TRIGGER ?? 'text=/entrar|login|acessar|ingres/i',
     selectors: {
       // Keycloak por padrao usa #username mesmo quando o label e "E-mail".
       user: process.env.AUTH_USER_SELECTOR ?? '#username',
       pass: process.env.AUTH_PASS_SELECTOR ?? '#password',
-      // TribeMD usa tema Keycloak customizado: botão é "Fazer login" (não #kc-login padrão)
-      submit: process.env.AUTH_SUBMIT_SELECTOR ?? 'button:has-text("Fazer login"), #kc-login, input[type="submit"]',
+      // button[type="submit"] cobre temas Keycloak que usam <button> em vez de <input>
+      submit: process.env.AUTH_SUBMIT_SELECTOR ?? 'button[type="submit"], input[type="submit"], #kc-login',
     },
     authHost: process.env.AUTH_HOST ?? 'auth.tribemd.com',
     loggedInSelector: process.env.AUTH_LOGGEDIN_SELECTOR ?? '[data-testid="user-menu"]',
