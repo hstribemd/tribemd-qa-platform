@@ -38,8 +38,8 @@ else
   git -C "$TMP_DIR" checkout --orphan gh-pages 2>/dev/null || true
 fi
 
-# Copia todos os relatórios gerados
-cp -r "$REPORTS_DIR/." "$TMP_DIR/"
+# Copia relatórios — exclui zips (muito grandes para o GitHub)
+rsync -a --exclude="*.zip" "$REPORTS_DIR/" "$TMP_DIR/"
 
 git -C "$TMP_DIR" add -A
 
