@@ -6,7 +6,7 @@ on:
       suite:
         description: "Suíte a executar"
         type: choice
-        options: [ci, qa:locale, regression, visual, compare-locales]
+        options: [ci, regression]
         default: ci
   schedule:
     # monitoramento contínuo: a cada 6 horas
