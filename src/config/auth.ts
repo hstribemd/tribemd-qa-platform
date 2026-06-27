@@ -38,8 +38,8 @@ export function authConfig(): AuthConfig {
       // Keycloak por padrao usa #username mesmo quando o label e "E-mail".
       user: process.env.AUTH_USER_SELECTOR ?? '#username',
       pass: process.env.AUTH_PASS_SELECTOR ?? '#password',
-      // button[type="submit"] cobre temas Keycloak que usam <button> em vez de <input>
-      submit: process.env.AUTH_SUBMIT_SELECTOR ?? 'button[type="submit"], input[type="submit"], #kc-login',
+      // Keycloak com tema customizado: cada locale tem texto diferente no botão
+      submit: process.env.AUTH_SUBMIT_SELECTOR ?? 'button:has-text("Fazer login"), button:has-text("Iniciar sesión"), button:has-text("Sign in"), button[type="submit"], input[type="submit"], #kc-login',
     },
     authHost: process.env.AUTH_HOST ?? 'auth.tribemd.com',
     loggedInSelector: process.env.AUTH_LOGGEDIN_SELECTOR ?? '[data-testid="user-menu"]',
