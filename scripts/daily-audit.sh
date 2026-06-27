@@ -118,8 +118,8 @@ for LOCALE in $QA_LOCALES; do
     || EXIT_CODE=$?
 
   echo ""
-  echo "--- Gerando relatórios ($LOCALE) ---"
-  QA_LOCALE="$LOCALE" npm run report:all || true
+  echo "--- Gerando relatório ($LOCALE) ---"
+  QA_LOCALE="$LOCALE" npx tsx scripts/generate-dashboard.mts || true
 
   if [ "$EXIT_CODE" -ne 0 ]; then
     OVERALL_EXIT="$EXIT_CODE"
