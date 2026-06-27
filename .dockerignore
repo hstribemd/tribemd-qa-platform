@@ -1,0 +1,7 @@
+node_modules/
+evidencias/
+reports/
+allure-results/
+allure-report/
+test-results/
+.git/

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "qa-reports",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "4321", "reports/br"],
+      "port": 4321
+    }
+  ]
+}

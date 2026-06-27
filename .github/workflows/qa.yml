@@ -1,0 +1,81 @@
+name: QA TribeMD
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Suíte a executar"
+        type: choice
+        options: [ci, qa:locale, regression, visual, compare-locales]
+        default: ci
+  schedule:
+    # monitoramento contínuo: a cada 6 horas
+    - cron: "0 */6 * * *"
+  push:
+    branches: [main]
+
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    # Site inteiro (sem teto de páginas) pode demorar; damos folga ao job.
+    timeout-minutes: 120
+    # Isolamento por locale: cada país roda em job próprio, em paralelo,
+    # com QA_LOCALE definido e artefatos separados. Um locale falhar não
+    # impede os outros de rodarem (fail-fast desligado).
+    strategy:
+      fail-fast: false
+      matrix:
+        locale: [br, us, es]
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.0-noble
+    env:
+      BASE_URL: https://tribemd.com
+      QA_LOCALE: ${{ matrix.locale }}
+      # Maquina dedicada do CI: varre o SITE INTEIRO (0 = sem teto de paginas).
+      CRAWL_MAX_PAGES: "0"
+      # Autenticação opcional: se os secrets existirem, roda logado (igual ao
+      # daily); senão, roda anônimo (audita o site público).
+      AUTH_USER: ${{ secrets.AUTH_USER }}
+      AUTH_PASS: ${{ secrets.AUTH_PASS }}
+      QA_AUTH: ${{ secrets.AUTH_USER != '' && '1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar Java (Allure)
+        run: apt-get update && apt-get install -y --no-install-recommends default-jre-headless
+
+      - name: Executar suíte (locale ${{ matrix.locale }})
+        run: npm run ${{ github.event.inputs.suite || 'ci' }}
+        # Sem continue-on-error: o gate de severidade DEVE poder pintar o job
+        # de vermelho quando houver defeito Critical/High. Os passos de
+        # relatório abaixo usam if:always() para rodar mesmo com falha.
+
+      - name: Gerar Allure report
+        if: always()
+        run: npx allure generate allure-results --clean -o allure-report
+
+      - name: Publicar artefatos (evidências + relatórios)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-artifacts-${{ matrix.locale }}
+          path: |
+            evidencias/${{ matrix.locale }}/
+            reports/${{ matrix.locale }}/
+            allure-report/
+          retention-days: 30
+
+      - name: Publicar dashboard no GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./reports/${{ matrix.locale }}
+          destination_dir: dashboard/${{ matrix.locale }}

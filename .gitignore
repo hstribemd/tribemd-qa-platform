@@ -1,0 +1,12 @@
+node_modules/
+evidencias/
+reports/
+allure-results/
+allure-report/
+test-results/
+tests/__screenshots__/
+*.log
+.DS_Store
+.cache/
+.env
+.auth/

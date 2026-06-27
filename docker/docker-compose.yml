@@ -1,0 +1,18 @@
+services:
+  qa:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - BASE_URL=${BASE_URL:-https://tribemd.com}
+      - CRAWL_DEPTH=${CRAWL_DEPTH:-2}
+      - CRAWL_MAX_PAGES=${CRAWL_MAX_PAGES:-40}
+      - AI_USE_LLM=${AI_USE_LLM:-false}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    volumes:
+      # persiste evidências e relatórios no host
+      - ../evidencias:/app/evidencias
+      - ../reports:/app/reports
+      - ../allure-results:/app/allure-results
+    # comando padrão vem do Dockerfile; pode ser sobrescrito:
+    # docker compose run --rm qa npm run compare-locales
