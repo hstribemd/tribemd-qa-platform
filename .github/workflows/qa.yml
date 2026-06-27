@@ -21,6 +21,8 @@ concurrency:
 jobs:
   qa:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     # Site inteiro (sem teto de páginas) pode demorar; damos folga ao job.
     timeout-minutes: 120
     # Isolamento por locale: cada país roda em job próprio, em paralelo,
