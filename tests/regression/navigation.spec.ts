@@ -86,6 +86,17 @@ for (const code of targetLocales()) {
         return extractLinks(page, BASE_URL);
       });
 
+      // Guarda mínimo: se 0 páginas foram visitadas, o site é inacessível neste
+      // ambiente (IP bloqueado, CDN, timeout). Falhar aqui deixa o erro explícito
+      // em vez de passar silenciosamente com 0 defeitos.
+      if (crawler.pages.length === 0) {
+        throw new Error(
+          `Crawler não conseguiu acessar nenhuma página em ${BASE_URL}${locale.basePath}/\n` +
+          `Possíveis causas: site inacessível no CI, IP bloqueado por CDN/firewall, ou timeout de rede.\n` +
+          `Verifique a etapa "Verificar conectividade" no log do workflow.`,
+        );
+      }
+
       // --- Fase 2: valida links descobertos que o crawler nao navegou ---
       const visited = new Set(crawler.pages.map((p) => stripHash(p.url)));
       const source = new Map<string, { sourceUrl: string; linkText: string }>();

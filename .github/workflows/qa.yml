@@ -53,6 +53,17 @@ jobs:
       - name: Instalar Java (Allure)
         run: apt-get update && apt-get install -y --no-install-recommends default-jre-headless
 
+      - name: Verificar conectividade com o site
+        run: |
+          URL="https://tribemd.com/${{ matrix.locale }}/"
+          echo "Testando acesso: $URL"
+          STATUS=$(curl -sSo /dev/null -w "%{http_code}" --max-time 15 "$URL" || echo "ERRO")
+          echo "Resposta HTTP: $STATUS"
+          if [ "$STATUS" = "ERRO" ] || [ "$STATUS" = "000" ]; then
+            echo "::error::Site inacessível a partir do GitHub Actions — testes serão ignorados ou vão falhar."
+            echo "Dica: o site pode estar bloqueando IPs do GitHub Actions (CDN/Cloudflare)."
+          fi
+
       - name: Executar suíte (locale ${{ matrix.locale }})
         run: npm run ${{ github.event.inputs.suite || 'ci' }}
         # Sem continue-on-error: o gate de severidade DEVE poder pintar o job
