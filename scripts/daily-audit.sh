@@ -28,7 +28,7 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOGFILE") 2>&1
 
 echo "============================================================"
-echo " TribeMD QA — Auditoria Diária BR"
+echo " TribeMD QA — Auditoria Diária BR · US · ES"
 echo " Início: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "============================================================"
 
@@ -129,6 +129,10 @@ for LOCALE in $QA_LOCALES; do
   fi
 done
 
+echo ""
+echo "--- Gerando dashboard unificado (BR + US + ES) ---"
+npm run report:unified || echo "[aviso] Falha ao gerar dashboard unificado"
+
 # Empacota um único .zip pronto para enviar (dashboards + evidências dos 3
 # locales). Screenshots já vêm embutidos no HTML; o zip preserva vídeos e o
 # "HTML da página" que ficam como links relativos.
@@ -148,8 +152,9 @@ else
   echo " RESULTADO: FALHOU (exit $OVERALL_EXIT) — verifique defeitos em reports/"
 fi
 echo " Fim: $(date '+%Y-%m-%d %H:%M:%S')"
+echo " Dashboard unificado: $PROJECT_DIR/reports/index.html"
 for LOCALE in $QA_LOCALES; do
-  echo " Dashboard $LOCALE: $PROJECT_DIR/reports/$LOCALE/dashboard.html"
+  echo " Dashboard $LOCALE:   $PROJECT_DIR/reports/$LOCALE/dashboard.html"
 done
 echo " Pacote p/ enviar: $SHARE_ZIP"
 echo " Log completo:     $LOGFILE"

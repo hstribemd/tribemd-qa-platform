@@ -74,10 +74,31 @@ jobs:
             allure-report/
           retention-days: 30
 
-      - name: Publicar dashboard no GitHub Pages
-        if: always() && github.ref == 'refs/heads/main'
+  merge:
+    needs: qa
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Baixar artefatos de todos os locales
+        uses: actions/download-artifact@v4
+        with:
+          pattern: qa-artifacts-*
+          merge-multiple: true
+          path: .
+
+      - name: Gerar dashboard unificado
+        run: npm run report:unified
+
+      - name: Publicar dashboard unificado no GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./reports/${{ matrix.locale }}
-          destination_dir: dashboard/${{ matrix.locale }}
+          publish_dir: ./reports
+          keep_files: true
