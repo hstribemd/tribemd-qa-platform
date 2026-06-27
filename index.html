@@ -122,7 +122,7 @@ a{color:#58a6ff}
       <span class="locale-tag">BR</span><span class="locale-tag">US</span><span class="locale-tag">ES</span>
     </div>
   </div>
-  <div class="report-meta">Gerado em 27/06/2026, 17:52:47</div>
+  <div class="report-meta">Gerado em 27/06/2026, 18:04:11</div>
   <div class="action-btns">
     <button class="action-btn" onclick="copySummary(this)">Copiar resumo</button>
     <button class="action-btn" onclick="window.print()">Imprimir / PDF</button>
@@ -146,7 +146,9 @@ a{color:#58a6ff}
   
   
   
-  
+  <div class="tb-sep"></div>
+       <button class="tb-btn on" data-l="all" onclick="filtLocale(this,'all')">Todos os locales (0)</button>
+       <button class="tb-btn" data-l="br" onclick="filtLocale(this,'br')">BR (0)</button><button class="tb-btn" data-l="us" onclick="filtLocale(this,'us')">US (0)</button><button class="tb-btn" data-l="es" onclick="filtLocale(this,'es')">ES (0)</button>
   <div class="tb-sep"></div>
   <button class="tb-btn" onclick="document.querySelectorAll('.card').forEach(c=>c.classList.add('open'))">Expandir tudo</button>
   <button class="tb-btn" onclick="document.querySelectorAll('.card').forEach(c=>c.classList.remove('open'))">Recolher tudo</button>
