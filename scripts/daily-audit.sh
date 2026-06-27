@@ -145,6 +145,10 @@ SHARE_ZIP="$PROJECT_DIR/reports/tribemd-qa-$DATE.zip"
     || echo "[aviso] Falha ao gerar o zip (relatórios individuais seguem em reports/)"
 
 echo ""
+echo "--- Publicando resultados no GitHub Pages ---"
+bash "$SCRIPT_DIR/publish-gh-pages.sh" || echo "[aviso] Publicação falhou — relatórios locais continuam disponíveis"
+
+echo ""
 echo "============================================================"
 if [ "$OVERALL_EXIT" -eq 0 ]; then
   echo " RESULTADO: PASSOU — nenhum defeito Critical/High em ($QA_LOCALES)"
